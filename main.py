@@ -12,11 +12,11 @@ class State(Enum):
 class Result:
     solved: State
     objective_function_value: Optional[np.float64]
-    solution: Optional[np.array[np.float64]]
+    solution: Optional[np.array]
 
     def __init__(self,
                  solved: State,
-                 objective_function_value: Optional[np.array[np.float64]] = None,
+                 objective_function_value: Optional[np.array] = None,
                  solution: np.float64 = None):
         self.solved = solved
         self.objective_function_value = objective_function_value
@@ -24,10 +24,10 @@ class Result:
 
 
 def interior_point(
-        C: np.array[np.float64],
-        A: np.array[np.float64],
-        x_0: np.array[np.float64],
-        b: np.array[np.float64],
+        C: np.array,
+        A: np.array,
+        x_0: np.array,
+        b: np.array,
         eps: np.float64 = 0.01,
         alpha: np.float64 = 0.5,
         maximizing: bool = True) -> Result:
