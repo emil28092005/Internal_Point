@@ -158,9 +158,7 @@ def interior_point(
         alpha: np.float64 = 0.5,  # Step coefficient
         maximizing: bool = True) -> Result:  # Flag for maximization or minimization
     # Check if the method is applicable: the initial point must satisfy the constraints
-    print(A)
     if (not np.all(np.dot(A, x_0) <= b) or np.any(x_0 == 0)):
-        print(np.dot(A, x_0), b)
         return Result(State.INAPPLICABLE, maximize=maximizing)
     # If the problem is a minimization, invert the coefficients of the objective function
     if (not maximizing):
@@ -247,6 +245,7 @@ def TEST_CASE_GENERAL_A05():
             state_name = "SOLVED"
         print(f"incorrect state type. expected SOLVED, got {state_name}.")
 
+
 def TEST_CASE_GENERAL_A09():
 
     print("----------------------------RUNNING_TEST_GENERAL_CASE----------------------------")
@@ -279,6 +278,7 @@ def TEST_CASE_GENERAL_A09():
             state_name = "SOLVED"
         print(f"incorrect state type. expected SOLVED, got {state_name}.")
 
+
 def TEST_MINIMIZE_CASE_A05():
     print("----------------------------RUNNING_TEST_MINIMIZE_CASE----------------------------")
     C = np.array([-2, 2, -6])
@@ -310,15 +310,16 @@ def TEST_MINIMIZE_CASE_A05():
         print(f"incorrect state type. expected SOLVED, got {state_name}.")
         return 0
 
+
 def TEST_MINIMIZE_CASE_A09():
     print("----------------------------RUNNING_TEST_MINIMIZE_CASE----------------------------")
     C = np.array([-2, 2, -6])
     A = np.array([
-        [2, 1, -2]
-        [1, 2, 4]
+        [2, 1, -2],
+        [1, 2, 4],
         [1, -1, 2]])
     b = np.array([24, 23, 10])
-    x_0 = np.array([1, 1])
+    x_0 = np.array([1, 1, 1])
     eps = 0.01
     alpha = 0.9
     maximize = True
@@ -373,6 +374,7 @@ def TEST_WITH_SLACK_CASE_A05():
             state_name = "SOLVED"
         print(f"incorrect state type. expected SOLVED, got {state_name}.")
 
+
 def TEST_WITH_SLACK_CASE_A09():
     print("----------------------------RUNNING_TEST_WITH_SLACK_CASE----------------------------")
 
@@ -382,7 +384,7 @@ def TEST_WITH_SLACK_CASE_A09():
         [-2, -1, 0, -2],
         [3, 2, 0, 1]])
     b = np.array([10, 18, 36])
-    x_0 = np.array([1, 1])
+    x_0 = np.array([1, 1, 1, 1])
     eps = 0.01
     alpha = 0.9
     maximize = True
@@ -403,6 +405,7 @@ def TEST_WITH_SLACK_CASE_A09():
         elif result.state == State.SOLVED:
             state_name = "SOLVED"
         print(f"incorrect state type. expected SOLVED, got {state_name}.")
+
 
 def TEST_UNBOUNDED_CASE_A05():
     print("----------------------------RUNNING_TEST_UNBOUNDED_CASE----------------------------")
@@ -435,6 +438,7 @@ def TEST_UNBOUNDED_CASE_A05():
         print(f"incorrect state type. expected SOLVED, got {state_name}.")
         return 0
 
+
 def TEST_UNBOUNDED_CASE_A09():
     print("----------------------------RUNNING_TEST_UNBOUNDED_CASE----------------------------")
 
@@ -465,6 +469,7 @@ def TEST_UNBOUNDED_CASE_A09():
             state_name = "SOLVED"
         print(f"incorrect state type. expected SOLVED, got {state_name}.")
         return 0
+
 
 def TEST_UNSOLVABLE_CASE_A05():
     print("----------------------------RUNNING_TEST_UNSOLVABLE_CASE----------------------------")
@@ -500,6 +505,7 @@ def TEST_UNSOLVABLE_CASE_A05():
 
         return 0
 
+
 def TEST_UNSOLVABLE_CASE_A09():
     print("----------------------------RUNNING_TEST_UNSOLVABLE_CASE----------------------------")
 
@@ -510,7 +516,7 @@ def TEST_UNSOLVABLE_CASE_A09():
         [-1, 0, 0, 10, 0],
         [0, 1, 1, -5, 1]])
     b = np.array([-24, 6, 1, 2])
-    x_0 = np.array([1, 1])
+    x_0 = np.array([-2, -3, -1, -1, 1])
     eps = 0.01
     alpha = 0.9
     maximize = True
@@ -534,12 +540,13 @@ def TEST_UNSOLVABLE_CASE_A09():
 
         return 0
 
+
 tests = [
     TEST_CASE_GENERAL_A05(), TEST_CASE_GENERAL_A09(),
-    TEST_MINIMIZE_CASE_A05(),TEST_MINIMIZE_CASE_A09(),
-    TEST_WITH_SLACK_CASE_A05(),TEST_WITH_SLACK_CASE_A09(),
-    TEST_UNBOUNDED_CASE_A05(),TEST_UNBOUNDED_CASE_A09(),
-    TEST_UNSOLVABLE_CASE_A05(),TEST_UNSOLVABLE_CASE_A09()
+    TEST_MINIMIZE_CASE_A05(), TEST_MINIMIZE_CASE_A09(),
+    TEST_WITH_SLACK_CASE_A05(), TEST_WITH_SLACK_CASE_A09(),
+    TEST_UNBOUNDED_CASE_A05(), TEST_UNBOUNDED_CASE_A09(),
+    TEST_UNSOLVABLE_CASE_A05(), TEST_UNSOLVABLE_CASE_A09()
 ]
 tests_passed = 0
 for test in tests:
