@@ -162,8 +162,8 @@ def print_result(result:Result):
 def interior_point(
         C: np.array,  # Vector of objective function coefficients
         A: np.array,  # Matrix of constraint coefficients
-        x_0: np.array,  # Initial point (vector)
         b: np.array,  # Vector of right-hand side values of constraints
+        x_0: np.array,  # Initial point (vector)
         eps: np.float64 = 0.01,  # Solution accuracy
         alpha: np.float64 = 0.5,  # Step coefficient
         maximizing: bool = True) -> Result:  # Flag for maximization or minimization
@@ -233,69 +233,159 @@ def interior_point(
 def TEST_CASE_GENERAL():
     
     print("----------------------------RUNNING_TEST_GENERAL_CASE----------------------------")
-    C = [5, 4]
-    A = [
+    
+    
+    C = np.array([5, 4])
+    A = np.array([
         [6, 4],
         [1, 2],
         [-1, 1],
-        [0, 1]]
-    b = [24, 6, 1, 2]
-    x_0 = [1, 1]
-    print_initial_inputs(C, A, x_0, b, 0.01, True);
-    result = interior_point(C, A, x_0, b );
+        [0, 1]])
+    b = np.array([24, 6, 1, 2])
+    x_0 = np.array([1, 1])
+    eps = 0.01
+    alpha = 0.5
+    maximize = True
     
+    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize);
+    result = interior_point(C, A, b, x_0, eps, alpha, maximize);
     
-    if result.state == State.SOLVED:
+    expected_state = State.SOLVED
+    if result.state == expected_state:
         print_result(result)
     else:
         state_name = ""
         if result.state == State.UNSOLVED:
             state_name = "UNSOLVED"
         elif result.state == State.INAPPLICABLE:
-            state_name = "INAPLICABLE"
+            state_name = "INAPPLICABLE"
+        elif result.state == State.SOLVED:
+            state_name = "SOLVED"
+        print(f"incorrect state type. expected SOLVED, got {state_name}.")
+
+def TEST_MINIMIZE_CASE():
+    
+    print("----------------------------RUNNING_TEST_MINIMIZE_CASE----------------------------")
+    C = np.array([-2, 2, -6])
+    A = np.array([
+        [2, 1, -2]
+        [1, 2, 4]
+        [1, -1, 2]])
+    b = np.array([24, 23, 10])
+    x_0 = np.array([1, 1])
+    eps = 0.01
+    alpha = 0.5
+    maximize = True
+    
+
+    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize);
+    result = interior_point(C, A, b, x_0, eps, alpha, maximize);
+    
+    expected_state = State.SOLVED
+    if result.state == expected_state:
+        print_result(result)
+    else:
+        state_name = ""
+        if result.state == State.UNSOLVED:
+            state_name = "UNSOLVED"
+        elif result.state == State.INAPPLICABLE:
+            state_name = "INAPPLICABLE"
+        elif result.state == State.SOLVED:
+            state_name = "SOLVED"
+        print(f"incorrect state type. expected SOLVED, got {state_name}.")  
+    
+      
+
+def TEST_WITH_SLACK_CASE():
+    print("----------------------------RUNNING_TEST_WITH_SLACK_CASE----------------------------")
+
+    C = np.array([2, -1, 0, -1])
+    A = np.array([
+        [1, -2, 1, 0],
+        [-2, -1, 0, -2],
+        [3, 2, 0, 1]])
+    b = np.array([10, 18, 36])
+    x_0 = np.array([1, 1])
+    eps = 0.01
+    alpha = 0.5
+    maximize = True
+    
+    
+    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize);
+    result = interior_point(C, A, b, x_0, eps, alpha, maximize);
+    
+    expected_state = State.SOLVED
+    if result.state == expected_state:
+        print_result(result)
+    else:
+        state_name = ""
+        if result.state == State.UNSOLVED:
+            state_name = "UNSOLVED"
+        elif result.state == State.INAPPLICABLE:
+            state_name = "INAPPLICABLE"
         elif result.state == State.SOLVED:
             state_name = "SOLVED"
         print(f"incorrect state type. expected SOLVED, got {state_name}.")
         
+def TEST_UNBOUNDED_CASE():
+    print("----------------------------RUNNING_TEST_UNBOUNDED_CASE----------------------------")
+
+    C = np.array([2, 1])
+    A = np.array([
+        [1, -1],
+        [2, 0]])
+    b = np.array([10, 40])
+    x_0 = np.array([1, 1])
+    eps = 0.01
+    alpha = 0.5
+    maximize = True    
+    
+    
+    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize);
+    result = interior_point(C, A, b, x_0, eps, alpha, maximize);
+    
+    expected_state = State.SOLVED
+    if result.state == expected_state:
+        print_result(result)
+    else:
+        state_name = ""
+        if result.state == State.UNSOLVED:
+            state_name = "UNSOLVED"
+        elif result.state == State.INAPPLICABLE:
+            state_name = "INAPPLICABLE"
+        elif result.state == State.SOLVED:
+            state_name = "SOLVED"
+        print(f"incorrect state type. expected SOLVED, got {state_name}.")
+    
+def TEST_UNSOLVABLE_CASE():
+    print("----------------------------RUNNING_TEST_UNSOLVABLE_CASE----------------------------")
+
+    C = np.array([5, 4, 0, -5, 13])
+    A = np.array([
+        [6, 4, 1, 3, 4],
+        [1, 2, 0, 0, 2],
+        [-1, 0, 0, 10, 0],
+        [0, 1, 1, -5, 1]])
+    b = np.array([-24, 6, 1, 2])
+    x_0 = np.array([1, 1])
+    eps = 0.01
+    alpha = 0.5
+    maximize = True
         
-    
-    '''if (!(result.state == bounded))
-    {
-        std::string state_name;
-        switch (result.state)
-        {
-        case unsolvable:
-            state_name = "unsolvable";
-            break;
-        case unbounded:
-            state_name = "unbounded";
-            break;
-        default:
-            state_name = "bounded";
-            break;
-        }
-        std::cout << "Incorrect state type. Expected bounded. Got " << state_name << std::endl;
-        return 0;
-    }
-
-    if (!check_eq(result.objective_function_value, 21))
-    {
-        std::cout << "Incorrect objective function value. Expected 21. Got "
-                  << result.objective_function_value << std::endl;
-        return 0;
-    }
-
-    if (!(check_eq(result.solution[0], 3) && check_eq(result.solution[1], 1.5)))
-    {
-        std::cout << "Incorrect desire variables. Expected 3 and 1.5. Got "
-                  << result.solution;
-        return 0;
-    }
-
-    printResult(result);
-    return 1;'''
+    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize);
+    result = interior_point(C, A, b, x_0, eps, alpha, maximize);
     
     
-    pass
-
-TEST_CASE_GENERAL()
+    
+    expected_state = State.SOLVED
+    if result.state == expected_state:
+        print_result(result)
+    else:
+        state_name = ""
+        if result.state == State.UNSOLVED:
+            state_name = "UNSOLVED"
+        elif result.state == State.INAPPLICABLE:
+            state_name = "INAPPLICABLE"
+        elif result.state == State.SOLVED:
+            state_name = "SOLVED"
+        print(f"incorrect state type. expected SOLVED, got {state_name}.")
