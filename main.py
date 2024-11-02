@@ -14,15 +14,17 @@ class Result:
     objective_function_value: Optional[np.float64]
     solution: Optional[np.array]
     maximize: bool
+
     def __init__(self,
                  state: State,
                  objective_function_value: Optional[np.array] = None,
-                 solution: np.float64 = None, maximize:bool = True):
+                 solution: np.float64 = None, maximize: bool = True):
         self.state = state
         self.objective_function_value = objective_function_value
         self.solution = solution
         self.maximize = maximize
-#def print_initial_inputs(Vector &C, Matrix &A, Vector &b, double eps, bool maximize)
+
+
 def print_initial_inputs(
         C: np.array,  # Vector of objective function coefficients
         A: np.array,  # Matrix of constraint coefficients
@@ -37,65 +39,59 @@ def print_initial_inputs(
     print(f"alpha: {alpha}")
     print(f"x_0: {x_0} \n")
     if (maximize):
-    
+
         print("Maximize")
-    
+
     else:
-    
+
         print("Minimize")
-    
-        
+
     z_str = "z = "
     previousIsZero = True
     lastNonZero = False
     for i in range(len(C)):
-    
-        isNegative = False;
-        
+
+        isNegative = False
+
         for k in range(len(C)):
-        
+
             if (C[k] == 0):
-            
+
                 lastNonZero = True
             else:
                 lastNonZero = False
                 break
-            
-                
 
         if (not previousIsZero and not lastNonZero):
-            z_str += " + ";
-        
+            z_str += " + "
 
         if (C[i] != 0):
             if (C[i] != 1):
                 if (C[i] < 0):
                     isNegative = True
                     z_str += "("
-                
+
                 z_str += str(C[i]) + " * "
-            
+
             z_str += "x" + str(i + 1)
             if (isNegative):
                 z_str += ")"
             previousIsZero = False
         else:
             previousIsZero = True
-        
+
     print(z_str)
-    print("\nsubject to the constrains:\n");
+    print("\nsubject to the constrains:\n")
     for i in range(len(b)):
         c_str = ""
         previousIsZero = True
         lastNonZero = False
         for j in range(len(A[i])):
-        #for (int j = 0; j < A.getColumns(); j++)
             isNegative = False
             for k in range(j, len(A[i])):
-            #for (int k = j; k < A[i].size(); k++)
-            
+
                 if (A[i][k] == 0):
-                
+
                     lastNonZero = True
                 else:
                     lastNonZero = False
@@ -103,57 +99,51 @@ def print_initial_inputs(
 
             if (not previousIsZero and not lastNonZero):
                 c_str += " + "
-            
 
-            if (A[i][j] != 0): 
+            if (A[i][j] != 0):
                 if (A[i][j] != 1):
                     if (A[i][j] < 0):
                         isNegative = True
                         c_str += "("
-                    
+
                     c_str += str(A[i][j]) + " * "
-                
+
                 c_str += "x" + str(j + 1)
                 if (isNegative):
                     c_str += ")"
-                
+
                 previousIsZero = False
             else:
                 previousIsZero = True
-            
-        
+
         c_str += " <= " + str(b[i])
         print(c_str)
 
 
-def print_result(result:Result):
+def print_result(result: Result):
 
     if (result.state == State.INAPPLICABLE):
         print("The method is not applicable!")
-    elif (result.state == State.UNSOLVED ):
+    elif (result.state == State.UNSOLVED):
         print("Unsolved problem!")
     else:
         print("SOLVED!")
         decVar_str = ""
-        decVar_str +="Decision variables: ["
+        decVar_str += "Decision variables: ["
         for i in range(len(result.solution)):
-        #for (int i = 0; i < result.solution.size(); i++)
             decVar_str += str(result.solution[i])
             if (i != len(result.solution) - 1):
-            
+
                 decVar_str += ", "
-            
+
         decVar_str += "]"
         print(decVar_str)
         res_str = ""
         if (result.maximize):
-        
             res_str += "Maximum "
-        
         else:
-        
             res_str += "Minimum "
-        
+
         res_str += f"objective function value: {result.objective_function_value}"
         print(res_str)
     return 0
@@ -162,41 +152,34 @@ def print_result(result:Result):
 def interior_point(
         C: np.array,  # Vector of objective function coefficients
         A: np.array,  # Matrix of constraint coefficients
-        b: np.array,  # Vector of right-hand side values of constraints
         x_0: np.array,  # Initial point (vector)
+        b: np.array,  # Vector of right-hand side values of constraints
         eps: np.float64 = 0.01,  # Solution accuracy
         alpha: np.float64 = 0.5,  # Step coefficient
         maximizing: bool = True) -> Result:  # Flag for maximization or minimization
     # Check if the method is applicable: the initial point must satisfy the constraints
-    if (not np.all(np.dot(A, x_0) >= b) or np.any(x_0 == 0)):
+    if (not np.all(np.dot(A, x_0) <= b) or np.any(x_0 == 0)):
+        print(np.dot(A, x_0), b)
         return Result(State.INAPPLICABLE, maximize=maximizing)
     # If the problem is a minimization, invert the coefficients of the objective function
     if (not maximizing):
         C = -C
-        
-    m = len(A)  # Number of constraints
-    n = len(A[0])  # Number of variables
+
+    m = A.shape[0]  # Number of constraints
+    n = A.shape[1]  # Number of variables
 
     # Initialize variables for the initial iteration
-    x = np.ones(n)  # Solution vector
-    s = np.ones(m)  # Slack variables vector
+    x_0 = np.concatenate((x_0, b-np.dot(A, x_0)))
+    x = x_0  # Solution vector
+
+    A = np.concatenate((A, np.eye(m)), axis=1)
+    C = np.concatenate((C, np.zeros(m)))
 
     iteration = 0  # Iteration counter
 
-    while(True):
-        # Calculate slack variables for each constraint
-        for i in range(m):
-            slack = b[i]
-            for j in range(n):
-                slack -= A[i][j] * x[j]
-            s[i] = slack
-        
-        # Update solution variables
-        for i in range(min(m, n)):
-            x[i] = s[i]
-
+    while (True):
         # Create a diagonal matrix from the slack variables vector
-        D = np.diag(s)
+        D = np.diag(x)
 
         # Solve the system of equations to find x*
         x_star = np.dot(np.linalg.inv(D), x)
@@ -204,18 +187,21 @@ def interior_point(
         C_star = np.dot(D, C)
 
         # Form the projection matrix
-        I = np.eye(n)
         A_star_transpose = np.transpose(A_star)
-        P = I - np.dot(A_star_transpose, np.linalg.inv(np.dot(A_star, A_star_transpose)))
-        P = np.dot(P, A_star)
+        P = np.eye(n+m) - np.dot(np.dot(A_star_transpose, np.linalg.inv(np.dot(A_star, A_star_transpose))), A_star)
 
         # Calculate the gradient of the objective function
         C_p = np.dot(P, C_star)
-        Mu = np.max(np.absolute(C_p))
+        Mu = np.min(C_p)
+        if (Mu > 0):
+            return Result(State.INAPPLICABLE)
 
+        # Update the value of x* considering the step size and gradient
+        x_star = np.ones(n+m) + alpha / np.abs(Mu) * C_p
+        x_new = np.dot(D, x_star)
         # Check the stopping criterion based on accuracy
-        if Mu < eps:
-            result = np.dot(C, x)
+        if np.linalg.norm(x_new - x) <= eps:
+            result = np.dot(C, x) if (maximizing) else -np.dot(C, x)
             return Result(State.SOLVED, objective_function_value=result, solution=x, maximize=maximizing)
 
         iteration += 1
@@ -224,17 +210,13 @@ def interior_point(
         if iteration >= 1000:
             return Result(State.UNSOLVED, maximize=maximizing)
 
-        # Update the value of x* considering the step size and gradient
-        x_star += (alpha / Mu) * C_p
-        x = np.dot(D, x_star)
+        x = x_new
 
 
 # TODO 5 tests (from assignment 1) and comparison with simplex and alpha = 0.9
 def TEST_CASE_GENERAL():
-    
+
     print("----------------------------RUNNING_TEST_GENERAL_CASE----------------------------")
-    
-    
     C = np.array([5, 4])
     A = np.array([
         [6, 4],
@@ -246,10 +228,10 @@ def TEST_CASE_GENERAL():
     eps = 0.01
     alpha = 0.5
     maximize = True
-    
-    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize);
-    result = interior_point(C, A, b, x_0, eps, alpha, maximize);
-    
+
+    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize)
+    result = interior_point(C, A, b, x_0, eps, alpha, maximize)
+
     expected_state = State.SOLVED
     if result.state == expected_state:
         print_result(result)
@@ -263,8 +245,8 @@ def TEST_CASE_GENERAL():
             state_name = "SOLVED"
         print(f"incorrect state type. expected SOLVED, got {state_name}.")
 
+
 def TEST_MINIMIZE_CASE():
-    
     print("----------------------------RUNNING_TEST_MINIMIZE_CASE----------------------------")
     C = np.array([-2, 2, -6])
     A = np.array([
@@ -276,11 +258,10 @@ def TEST_MINIMIZE_CASE():
     eps = 0.01
     alpha = 0.5
     maximize = True
-    
 
-    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize);
-    result = interior_point(C, A, b, x_0, eps, alpha, maximize);
-    
+    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize)
+    result = interior_point(C, A, b, x_0, eps, alpha, maximize)
+
     expected_state = State.SOLVED
     if result.state == expected_state:
         print_result(result)
@@ -292,9 +273,8 @@ def TEST_MINIMIZE_CASE():
             state_name = "INAPPLICABLE"
         elif result.state == State.SOLVED:
             state_name = "SOLVED"
-        print(f"incorrect state type. expected SOLVED, got {state_name}.")  
-    
-      
+        print(f"incorrect state type. expected SOLVED, got {state_name}.")
+
 
 def TEST_WITH_SLACK_CASE():
     print("----------------------------RUNNING_TEST_WITH_SLACK_CASE----------------------------")
@@ -309,11 +289,10 @@ def TEST_WITH_SLACK_CASE():
     eps = 0.01
     alpha = 0.5
     maximize = True
-    
-    
-    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize);
-    result = interior_point(C, A, b, x_0, eps, alpha, maximize);
-    
+
+    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize)
+    result = interior_point(C, A, b, x_0, eps, alpha, maximize)
+
     expected_state = State.SOLVED
     if result.state == expected_state:
         print_result(result)
@@ -326,7 +305,8 @@ def TEST_WITH_SLACK_CASE():
         elif result.state == State.SOLVED:
             state_name = "SOLVED"
         print(f"incorrect state type. expected SOLVED, got {state_name}.")
-        
+
+
 def TEST_UNBOUNDED_CASE():
     print("----------------------------RUNNING_TEST_UNBOUNDED_CASE----------------------------")
 
@@ -338,12 +318,11 @@ def TEST_UNBOUNDED_CASE():
     x_0 = np.array([1, 1])
     eps = 0.01
     alpha = 0.5
-    maximize = True    
-    
-    
-    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize);
-    result = interior_point(C, A, b, x_0, eps, alpha, maximize);
-    
+    maximize = True
+
+    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize)
+    result = interior_point(C, A, b, x_0, eps, alpha, maximize)
+
     expected_state = State.SOLVED
     if result.state == expected_state:
         print_result(result)
@@ -356,7 +335,8 @@ def TEST_UNBOUNDED_CASE():
         elif result.state == State.SOLVED:
             state_name = "SOLVED"
         print(f"incorrect state type. expected SOLVED, got {state_name}.")
-    
+
+
 def TEST_UNSOLVABLE_CASE():
     print("----------------------------RUNNING_TEST_UNSOLVABLE_CASE----------------------------")
 
@@ -371,12 +351,10 @@ def TEST_UNSOLVABLE_CASE():
     eps = 0.01
     alpha = 0.5
     maximize = True
-        
-    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize);
-    result = interior_point(C, A, b, x_0, eps, alpha, maximize);
-    
-    
-    
+
+    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize)
+    result = interior_point(C, A, b, x_0, eps, alpha, maximize)
+
     expected_state = State.SOLVED
     if result.state == expected_state:
         print_result(result)
