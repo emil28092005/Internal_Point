@@ -152,12 +152,13 @@ def print_result(result: Result):
 def interior_point(
         C: np.array,  # Vector of objective function coefficients
         A: np.array,  # Matrix of constraint coefficients
-        x_0: np.array,  # Initial point (vector)
         b: np.array,  # Vector of right-hand side values of constraints
+        x_0: np.array,  # Initial point (vector)
         eps: np.float64 = 0.01,  # Solution accuracy
         alpha: np.float64 = 0.5,  # Step coefficient
         maximizing: bool = True) -> Result:  # Flag for maximization or minimization
     # Check if the method is applicable: the initial point must satisfy the constraints
+    print(A)
     if (not np.all(np.dot(A, x_0) <= b) or np.any(x_0 == 0)):
         print(np.dot(A, x_0), b)
         return Result(State.INAPPLICABLE, maximize=maximizing)
@@ -251,14 +252,14 @@ def TEST_MINIMIZE_CASE():
     print("----------------------------RUNNING_TEST_MINIMIZE_CASE----------------------------")
     C = np.array([-2, 2, -6])
     A = np.array([
-        [2, 1, -2]
-        [1, 2, 4]
+        [2, 1, -2],
+        [1, 2, 4],
         [1, -1, 2]])
     b = np.array([24, 23, 10])
-    x_0 = np.array([1, 1])
+    x_0 = np.array([1, 1, 1])
     eps = 0.01
     alpha = 0.5
-    maximize = True
+    maximize = False
 
     print_initial_inputs(C, A, b, x_0, eps, alpha, maximize)
     result = interior_point(C, A, b, x_0, eps, alpha, maximize)
@@ -288,7 +289,7 @@ def TEST_WITH_SLACK_CASE():
         [-2, -1, 0, -2],
         [3, 2, 0, 1]])
     b = np.array([10, 18, 36])
-    x_0 = np.array([1, 1])
+    x_0 = np.array([1, 1, 1, 1])
     eps = 0.01
     alpha = 0.5
     maximize = True
@@ -353,7 +354,7 @@ def TEST_UNSOLVABLE_CASE():
         [-1, 0, 0, 10, 0],
         [0, 1, 1, -5, 1]])
     b = np.array([-24, 6, 1, 2])
-    x_0 = np.array([1, 1])
+    x_0 = np.array([-2, -3, -1, -1, 1])
     eps = 0.01
     alpha = 0.5
     maximize = True
@@ -391,5 +392,5 @@ for test in tests:
 
 
 print("----------------------------RESULTS----------------------------")
-print("Total number of tests: " << tests.size())
-print("Total number of passed tests: " << tests_passed)
+print("Total number of tests: ", tests.size())
+print("Total number of passed tests: ", tests_passed)
