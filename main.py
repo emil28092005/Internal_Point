@@ -28,8 +28,8 @@ class Result:
 def print_initial_inputs(
         C: np.array,  # Vector of objective function coefficients
         A: np.array,  # Matrix of constraint coefficients
-        x_0: np.array,  # Initial point (vector)
         b: np.array,  # Vector of right-hand side values of constraints
+        x_0: np.array,  # Initial point (vector)
         eps: np.float64 = 0.01,  # Solution accuracy
         alpha: np.float64 = 0.5,  # Step coefficient
         maximize: bool = True):
@@ -49,11 +49,11 @@ def print_initial_inputs(
     z_str = "z = "
     previousIsZero = True
     lastNonZero = False
-    for i in range(len(C)):
+    for i in range(C.shape[0]):
 
         isNegative = False
 
-        for k in range(len(C)):
+        for k in range(C.shape[0]):
 
             if (C[k] == 0):
 
@@ -82,13 +82,13 @@ def print_initial_inputs(
 
     print(z_str)
     print("\nsubject to the constrains:\n")
-    for i in range(len(b)):
+    for i in range(b.shape[0]):
         c_str = ""
         previousIsZero = True
         lastNonZero = False
-        for j in range(len(A[i])):
+        for j in range(A.shape[1]):
             isNegative = False
-            for k in range(j, len(A[i])):
+            for k in range(j, A.shape[1]):
 
                 if (A[i][k] == 0):
 
@@ -154,11 +154,11 @@ def interior_point(
         A: np.array,  # Matrix of constraint coefficients
         b: np.array,  # Vector of right-hand side values of constraints
         x_0: np.array,  # Initial point (vector)
-        eps: np.float64 = 0.01,  # Solution accuracy
+        eps: np.float64 = 1e-6,  # Solution accuracy
         alpha: np.float64 = 0.5,  # Step coefficient
         maximizing: bool = True) -> Result:  # Flag for maximization or minimization
     # Check if the method is applicable: the initial point must satisfy the constraints
-    if (not np.all(np.dot(A, x_0) <= b) or np.any(x_0 == 0)):
+    if (not np.all(np.dot(A, x_0) <= b) or np.any(x_0 <= 0)):
         return Result(State.INAPPLICABLE, maximize=maximizing)
     # If the problem is a minimization, invert the coefficients of the objective function
     if (not maximizing):
@@ -201,7 +201,9 @@ def interior_point(
         # Check the stopping criterion based on accuracy
         if np.linalg.norm(x_new - x) <= eps:
             result = np.dot(C, x) if (maximizing) else -np.dot(C, x)
-            return Result(State.SOLVED, objective_function_value=result, solution=x, maximize=maximizing)
+            return Result(
+                State.SOLVED, objective_function_value=np.round(result, 3), solution=np.round(x, 3), maximize=maximizing
+            )
 
         iteration += 1
 
@@ -224,7 +226,7 @@ def TEST_CASE_GENERAL_A05():
         [0, 1]])
     b = np.array([24, 6, 1, 2])
     x_0 = np.array([1, 1])
-    eps = 0.01
+    eps = 1e-4
     alpha = 0.5
     maximize = True
 
@@ -257,7 +259,7 @@ def TEST_CASE_GENERAL_A09():
         [0, 1]])
     b = np.array([24, 6, 1, 2])
     x_0 = np.array([1, 1])
-    eps = 0.01
+    eps = 1e-4
     alpha = 0.9
     maximize = True
 
@@ -288,7 +290,7 @@ def TEST_MINIMIZE_CASE_A05():
         [1, -1, 2]])
     b = np.array([24, 23, 10])
     x_0 = np.array([1, 1, 1])
-    eps = 0.01
+    eps = 1e-4
     alpha = 0.5
     maximize = False
 
@@ -320,7 +322,7 @@ def TEST_MINIMIZE_CASE_A09():
         [1, -1, 2]])
     b = np.array([24, 23, 10])
     x_0 = np.array([1, 1, 1])
-    eps = 0.01
+    eps = 1e-4
     alpha = 0.9
     maximize = True
 
@@ -353,7 +355,7 @@ def TEST_WITH_SLACK_CASE_A05():
         [3, 2, 0, 1]])
     b = np.array([10, 18, 36])
     x_0 = np.array([1, 1, 1, 1])
-    eps = 0.01
+    eps = 1e-4
     alpha = 0.5
     maximize = True
 
@@ -385,7 +387,7 @@ def TEST_WITH_SLACK_CASE_A09():
         [3, 2, 0, 1]])
     b = np.array([10, 18, 36])
     x_0 = np.array([1, 1, 1, 1])
-    eps = 0.01
+    eps = 1e-4
     alpha = 0.9
     maximize = True
 
@@ -416,14 +418,14 @@ def TEST_UNBOUNDED_CASE_A05():
         [2, 0]])
     b = np.array([10, 40])
     x_0 = np.array([1, 1])
-    eps = 0.01
+    eps = 1e-4
     alpha = 0.5
     maximize = True
 
     print_initial_inputs(C, A, b, x_0, eps, alpha, maximize)
     result = interior_point(C, A, b, x_0, eps, alpha, maximize)
 
-    expected_state = State.SOLVED
+    expected_state = State.UNSOLVED
     if result.state == expected_state:
         print_result(result)
         return 1
@@ -448,14 +450,14 @@ def TEST_UNBOUNDED_CASE_A09():
         [2, 0]])
     b = np.array([10, 40])
     x_0 = np.array([1, 1])
-    eps = 0.01
+    eps = 1e-4
     alpha = 0.9
     maximize = True
 
     print_initial_inputs(C, A, b, x_0, eps, alpha, maximize)
     result = interior_point(C, A, b, x_0, eps, alpha, maximize)
 
-    expected_state = State.SOLVED
+    expected_state = State.UNSOLVED
     if result.state == expected_state:
         print_result(result)
         return 1
@@ -482,14 +484,14 @@ def TEST_UNSOLVABLE_CASE_A05():
         [0, 1, 1, -5, 1]])
     b = np.array([-24, 6, 1, 2])
     x_0 = np.array([-2, -3, -1, -1, 1])
-    eps = 0.01
+    eps = 1e-4
     alpha = 0.5
     maximize = True
 
     print_initial_inputs(C, A, b, x_0, eps, alpha, maximize)
     result = interior_point(C, A, b, x_0, eps, alpha, maximize)
 
-    expected_state = State.SOLVED
+    expected_state = State.INAPPLICABLE
     if result.state == expected_state:
         print_result(result)
         return 1
@@ -517,14 +519,14 @@ def TEST_UNSOLVABLE_CASE_A09():
         [0, 1, 1, -5, 1]])
     b = np.array([-24, 6, 1, 2])
     x_0 = np.array([-2, -3, -1, -1, 1])
-    eps = 0.01
+    eps = 1e-4
     alpha = 0.9
     maximize = True
 
     print_initial_inputs(C, A, b, x_0, eps, alpha, maximize)
     result = interior_point(C, A, b, x_0, eps, alpha, maximize)
 
-    expected_state = State.SOLVED
+    expected_state = State.INAPPLICABLE
     if result.state == expected_state:
         print_result(result)
         return 1
@@ -541,18 +543,37 @@ def TEST_UNSOLVABLE_CASE_A09():
         return 0
 
 
+simplex_general_case_decVar_str = ("----------------------------SIMPLEX_TEST_GENERAL_CASE----------------------------\n"
+                                   "Decision variables: [3, 1.5]")
+simplex_minimize_case_decVar_str = ("----------------------------SIMPLEX_TEST_MINIMIZE_CASE"
+                                    "----------------------------\n"
+                                    "Decision variables: [0, 0.75, 5.375]")
+simplex_slack_case_decVar_str = ("----------------------------SIMPLEX_TEST_SLACK_CASE----------------------------\n"
+                                 "Decision variables: [11.5, 0.75, 0, 0]")
+simplex_unbounded_case_decVar_str = ("----------------------------SIMPLEX_TEST_UNBOUNDED_CASE"
+                                     "----------------------------\n"
+                                     "Decision variables: None")
+simplex_unsolvable_case_decVar_str = ("----------------------------SIMPLEX_TEST_UNSOLVABLE_CASE"
+                                      "----------------------------\n"
+                                      "Decision variables: None")
+
+
 tests = [
-    TEST_CASE_GENERAL_A05(), TEST_CASE_GENERAL_A09(),
-    TEST_MINIMIZE_CASE_A05(), TEST_MINIMIZE_CASE_A09(),
-    TEST_WITH_SLACK_CASE_A05(), TEST_WITH_SLACK_CASE_A09(),
-    TEST_UNBOUNDED_CASE_A05(), TEST_UNBOUNDED_CASE_A09(),
-    TEST_UNSOLVABLE_CASE_A05(), TEST_UNSOLVABLE_CASE_A09()
+    [TEST_CASE_GENERAL_A05(), TEST_CASE_GENERAL_A09(), simplex_general_case_decVar_str],
+    [TEST_MINIMIZE_CASE_A05(), TEST_MINIMIZE_CASE_A09(), simplex_minimize_case_decVar_str],
+    [TEST_WITH_SLACK_CASE_A05(), TEST_WITH_SLACK_CASE_A09(), simplex_slack_case_decVar_str],
+    [TEST_UNBOUNDED_CASE_A05(), TEST_UNBOUNDED_CASE_A09(), simplex_unbounded_case_decVar_str],
+    [TEST_UNSOLVABLE_CASE_A05(), TEST_UNSOLVABLE_CASE_A09(), simplex_unsolvable_case_decVar_str]
 ]
 tests_passed = 0
 for test in tests:
-    tests_passed += test
+    for test_variant_i in range(len(test)):
+        if (test_variant_i == 2):
+            print(test[2])
+        else:
+            tests_passed += test[test_variant_i]
 
 
 print("----------------------------RESULTS----------------------------")
-print("Total number of tests: ", tests.size())
-print("Total number of passed tests: ", tests_passed)
+print(f"Total number of tests: {len(tests) * 2}")
+print(f"Total number of passed tests: {tests_passed}")
