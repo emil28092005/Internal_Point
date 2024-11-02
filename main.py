@@ -157,6 +157,10 @@ def interior_point(
         eps: np.float64 = 1e-6,  # Solution accuracy
         alpha: np.float64 = 0.5,  # Step coefficient
         maximizing: bool = True) -> Result:  # Flag for maximization or minimization
+
+    # number of non-slack variables
+    k = C.shape[0]
+
     # Check if the method is applicable: the initial point must satisfy the constraints
     if (not np.all(np.dot(A, x_0) <= b) or np.any(x_0 <= 0)):
         return Result(State.INAPPLICABLE, maximize=maximizing)
@@ -201,6 +205,7 @@ def interior_point(
         # Check the stopping criterion based on accuracy
         if np.linalg.norm(x_new - x) <= eps:
             result = np.dot(C, x) if (maximizing) else -np.dot(C, x)
+            x = x[:k]
             return Result(
                 State.SOLVED, objective_function_value=np.round(result, 3), solution=np.round(x, 3), maximize=maximizing
             )
@@ -324,7 +329,7 @@ def TEST_MINIMIZE_CASE_A09():
     x_0 = np.array([1, 1, 1])
     eps = 1e-4
     alpha = 0.9
-    maximize = True
+    maximize = False
 
     print_initial_inputs(C, A, b, x_0, eps, alpha, maximize)
     result = interior_point(C, A, b, x_0, eps, alpha, maximize)
@@ -559,11 +564,11 @@ simplex_unsolvable_case_decVar_str = ("----------------------------SIMPLEX_TEST_
 
 
 tests = [
-    [TEST_CASE_GENERAL_A05(), TEST_CASE_GENERAL_A09(), simplex_general_case_decVar_str],
-    [TEST_MINIMIZE_CASE_A05(), TEST_MINIMIZE_CASE_A09(), simplex_minimize_case_decVar_str],
-    [TEST_WITH_SLACK_CASE_A05(), TEST_WITH_SLACK_CASE_A09(), simplex_slack_case_decVar_str],
-    [TEST_UNBOUNDED_CASE_A05(), TEST_UNBOUNDED_CASE_A09(), simplex_unbounded_case_decVar_str],
-    [TEST_UNSOLVABLE_CASE_A05(), TEST_UNSOLVABLE_CASE_A09(), simplex_unsolvable_case_decVar_str]
+    [TEST_CASE_GENERAL_A05, TEST_CASE_GENERAL_A09, simplex_general_case_decVar_str],
+    [TEST_MINIMIZE_CASE_A05, TEST_MINIMIZE_CASE_A09, simplex_minimize_case_decVar_str],
+    [TEST_WITH_SLACK_CASE_A05, TEST_WITH_SLACK_CASE_A09, simplex_slack_case_decVar_str],
+    [TEST_UNBOUNDED_CASE_A05, TEST_UNBOUNDED_CASE_A09, simplex_unbounded_case_decVar_str],
+    [TEST_UNSOLVABLE_CASE_A05, TEST_UNSOLVABLE_CASE_A09, simplex_unsolvable_case_decVar_str]
 ]
 tests_passed = 0
 for test in tests:
@@ -571,7 +576,7 @@ for test in tests:
         if (test_variant_i == 2):
             print(test[2])
         else:
-            tests_passed += test[test_variant_i]
+            tests_passed += test[test_variant_i]()
 
 
 print("----------------------------RESULTS----------------------------")
