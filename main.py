@@ -215,7 +215,7 @@ def interior_point(
 
 
 # TODO 5 tests (from assignment 1) and comparison with simplex and alpha = 0.9
-def TEST_CASE_GENERAL():
+def TEST_CASE_GENERAL_A05():
 
     print("----------------------------RUNNING_TEST_GENERAL_CASE----------------------------")
     C = np.array([5, 4])
@@ -247,8 +247,39 @@ def TEST_CASE_GENERAL():
             state_name = "SOLVED"
         print(f"incorrect state type. expected SOLVED, got {state_name}.")
 
+def TEST_CASE_GENERAL_A09():
 
-def TEST_MINIMIZE_CASE():
+    print("----------------------------RUNNING_TEST_GENERAL_CASE----------------------------")
+    C = np.array([5, 4])
+    A = np.array([
+        [6, 4],
+        [1, 2],
+        [-1, 1],
+        [0, 1]])
+    b = np.array([24, 6, 1, 2])
+    x_0 = np.array([1, 1])
+    eps = 0.01
+    alpha = 0.9
+    maximize = True
+
+    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize)
+    result = interior_point(C, A, b, x_0, eps, alpha, maximize)
+
+    expected_state = State.SOLVED
+    if result.state == expected_state:
+        print_result(result)
+        return 1
+    else:
+        state_name = ""
+        if result.state == State.UNSOLVED:
+            state_name = "UNSOLVED"
+        elif result.state == State.INAPPLICABLE:
+            state_name = "INAPPLICABLE"
+        elif result.state == State.SOLVED:
+            state_name = "SOLVED"
+        print(f"incorrect state type. expected SOLVED, got {state_name}.")
+
+def TEST_MINIMIZE_CASE_A05():
     print("----------------------------RUNNING_TEST_MINIMIZE_CASE----------------------------")
     C = np.array([-2, 2, -6])
     A = np.array([
@@ -279,8 +310,39 @@ def TEST_MINIMIZE_CASE():
         print(f"incorrect state type. expected SOLVED, got {state_name}.")
         return 0
 
+def TEST_MINIMIZE_CASE_A09():
+    print("----------------------------RUNNING_TEST_MINIMIZE_CASE----------------------------")
+    C = np.array([-2, 2, -6])
+    A = np.array([
+        [2, 1, -2]
+        [1, 2, 4]
+        [1, -1, 2]])
+    b = np.array([24, 23, 10])
+    x_0 = np.array([1, 1])
+    eps = 0.01
+    alpha = 0.9
+    maximize = True
 
-def TEST_WITH_SLACK_CASE():
+    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize)
+    result = interior_point(C, A, b, x_0, eps, alpha, maximize)
+
+    expected_state = State.SOLVED
+    if result.state == expected_state:
+        print_result(result)
+        return 1
+    else:
+        state_name = ""
+        if result.state == State.UNSOLVED:
+            state_name = "UNSOLVED"
+        elif result.state == State.INAPPLICABLE:
+            state_name = "INAPPLICABLE"
+        elif result.state == State.SOLVED:
+            state_name = "SOLVED"
+        print(f"incorrect state type. expected SOLVED, got {state_name}.")
+        return 0
+
+
+def TEST_WITH_SLACK_CASE_A05():
     print("----------------------------RUNNING_TEST_WITH_SLACK_CASE----------------------------")
 
     C = np.array([2, -1, 0, -1])
@@ -311,8 +373,38 @@ def TEST_WITH_SLACK_CASE():
             state_name = "SOLVED"
         print(f"incorrect state type. expected SOLVED, got {state_name}.")
 
+def TEST_WITH_SLACK_CASE_A09():
+    print("----------------------------RUNNING_TEST_WITH_SLACK_CASE----------------------------")
 
-def TEST_UNBOUNDED_CASE():
+    C = np.array([2, -1, 0, -1])
+    A = np.array([
+        [1, -2, 1, 0],
+        [-2, -1, 0, -2],
+        [3, 2, 0, 1]])
+    b = np.array([10, 18, 36])
+    x_0 = np.array([1, 1])
+    eps = 0.01
+    alpha = 0.9
+    maximize = True
+
+    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize)
+    result = interior_point(C, A, b, x_0, eps, alpha, maximize)
+
+    expected_state = State.SOLVED
+    if result.state == expected_state:
+        print_result(result)
+        return 1
+    else:
+        state_name = ""
+        if result.state == State.UNSOLVED:
+            state_name = "UNSOLVED"
+        elif result.state == State.INAPPLICABLE:
+            state_name = "INAPPLICABLE"
+        elif result.state == State.SOLVED:
+            state_name = "SOLVED"
+        print(f"incorrect state type. expected SOLVED, got {state_name}.")
+
+def TEST_UNBOUNDED_CASE_A05():
     print("----------------------------RUNNING_TEST_UNBOUNDED_CASE----------------------------")
 
     C = np.array([2, 1])
@@ -343,8 +435,38 @@ def TEST_UNBOUNDED_CASE():
         print(f"incorrect state type. expected SOLVED, got {state_name}.")
         return 0
 
+def TEST_UNBOUNDED_CASE_A09():
+    print("----------------------------RUNNING_TEST_UNBOUNDED_CASE----------------------------")
 
-def TEST_UNSOLVABLE_CASE():
+    C = np.array([2, 1])
+    A = np.array([
+        [1, -1],
+        [2, 0]])
+    b = np.array([10, 40])
+    x_0 = np.array([1, 1])
+    eps = 0.01
+    alpha = 0.9
+    maximize = True
+
+    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize)
+    result = interior_point(C, A, b, x_0, eps, alpha, maximize)
+
+    expected_state = State.SOLVED
+    if result.state == expected_state:
+        print_result(result)
+        return 1
+    else:
+        state_name = ""
+        if result.state == State.UNSOLVED:
+            state_name = "UNSOLVED"
+        elif result.state == State.INAPPLICABLE:
+            state_name = "INAPPLICABLE"
+        elif result.state == State.SOLVED:
+            state_name = "SOLVED"
+        print(f"incorrect state type. expected SOLVED, got {state_name}.")
+        return 0
+
+def TEST_UNSOLVABLE_CASE_A05():
     print("----------------------------RUNNING_TEST_UNSOLVABLE_CASE----------------------------")
 
     C = np.array([5, 4, 0, -5, 13])
@@ -378,13 +500,46 @@ def TEST_UNSOLVABLE_CASE():
 
         return 0
 
+def TEST_UNSOLVABLE_CASE_A09():
+    print("----------------------------RUNNING_TEST_UNSOLVABLE_CASE----------------------------")
+
+    C = np.array([5, 4, 0, -5, 13])
+    A = np.array([
+        [6, 4, 1, 3, 4],
+        [1, 2, 0, 0, 2],
+        [-1, 0, 0, 10, 0],
+        [0, 1, 1, -5, 1]])
+    b = np.array([-24, 6, 1, 2])
+    x_0 = np.array([1, 1])
+    eps = 0.01
+    alpha = 0.9
+    maximize = True
+
+    print_initial_inputs(C, A, b, x_0, eps, alpha, maximize)
+    result = interior_point(C, A, b, x_0, eps, alpha, maximize)
+
+    expected_state = State.SOLVED
+    if result.state == expected_state:
+        print_result(result)
+        return 1
+    else:
+        state_name = ""
+        if result.state == State.UNSOLVED:
+            state_name = "UNSOLVED"
+        elif result.state == State.INAPPLICABLE:
+            state_name = "INAPPLICABLE"
+        elif result.state == State.SOLVED:
+            state_name = "SOLVED"
+        print(f"incorrect state type. expected SOLVED, got {state_name}.")
+
+        return 0
 
 tests = [
-    TEST_CASE_GENERAL(),
-    TEST_MINIMIZE_CASE(),
-    TEST_WITH_SLACK_CASE(),
-    TEST_UNBOUNDED_CASE(),
-    TEST_UNSOLVABLE_CASE()
+    TEST_CASE_GENERAL_A05(), TEST_CASE_GENERAL_A09(),
+    TEST_MINIMIZE_CASE_A05(),TEST_MINIMIZE_CASE_A09(),
+    TEST_WITH_SLACK_CASE_A05(),TEST_WITH_SLACK_CASE_A09(),
+    TEST_UNBOUNDED_CASE_A05(),TEST_UNBOUNDED_CASE_A09(),
+    TEST_UNSOLVABLE_CASE_A05(),TEST_UNSOLVABLE_CASE_A09()
 ]
 tests_passed = 0
 for test in tests:
