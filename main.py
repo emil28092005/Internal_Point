@@ -222,7 +222,7 @@ def interior_point(
 # TODO 5 tests (from assignment 1) and comparison with simplex and alpha = 0.9
 def TEST_CASE_GENERAL_A05():
 
-    print("----------------------------RUNNING_TEST_GENERAL_CASE----------------------------")
+    print("----------------------RUNNING_TEST_GENERAL_CASE----------------------")
     C = np.array([5, 4])
     A = np.array([
         [6, 4],
@@ -255,7 +255,7 @@ def TEST_CASE_GENERAL_A05():
 
 def TEST_CASE_GENERAL_A09():
 
-    print("----------------------------RUNNING_TEST_GENERAL_CASE----------------------------")
+    print("----------------------RUNNING_TEST_GENERAL_CASE----------------------")
     C = np.array([5, 4])
     A = np.array([
         [6, 4],
@@ -287,7 +287,7 @@ def TEST_CASE_GENERAL_A09():
 
 
 def TEST_MINIMIZE_CASE_A05():
-    print("----------------------------RUNNING_TEST_MINIMIZE_CASE----------------------------")
+    print("----------------------RUNNING_TEST_MINIMIZE_CASE----------------------")
     C = np.array([-2, 2, -6])
     A = np.array([
         [2, 1, -2],
@@ -319,7 +319,7 @@ def TEST_MINIMIZE_CASE_A05():
 
 
 def TEST_MINIMIZE_CASE_A09():
-    print("----------------------------RUNNING_TEST_MINIMIZE_CASE----------------------------")
+    print("----------------------RUNNING_TEST_MINIMIZE_CASE----------------------")
     C = np.array([-2, 2, -6])
     A = np.array([
         [2, 1, -2],
@@ -351,7 +351,7 @@ def TEST_MINIMIZE_CASE_A09():
 
 
 def TEST_WITH_SLACK_CASE_A05():
-    print("----------------------------RUNNING_TEST_WITH_SLACK_CASE----------------------------")
+    print("----------------------RUNNING_TEST_WITH_SLACK_CASE----------------------")
 
     C = np.array([2, -1, 0, -1])
     A = np.array([
@@ -383,7 +383,7 @@ def TEST_WITH_SLACK_CASE_A05():
 
 
 def TEST_WITH_SLACK_CASE_A09():
-    print("----------------------------RUNNING_TEST_WITH_SLACK_CASE----------------------------")
+    print("----------------------RUNNING_TEST_WITH_SLACK_CASE----------------------")
 
     C = np.array([2, -1, 0, -1])
     A = np.array([
@@ -415,7 +415,7 @@ def TEST_WITH_SLACK_CASE_A09():
 
 
 def TEST_UNBOUNDED_CASE_A05():
-    print("----------------------------RUNNING_TEST_UNBOUNDED_CASE----------------------------")
+    print("----------------------RUNNING_TEST_UNBOUNDED_CASE----------------------")
 
     C = np.array([2, 1])
     A = np.array([
@@ -447,7 +447,7 @@ def TEST_UNBOUNDED_CASE_A05():
 
 
 def TEST_UNBOUNDED_CASE_A09():
-    print("----------------------------RUNNING_TEST_UNBOUNDED_CASE----------------------------")
+    print("----------------------RUNNING_TEST_UNBOUNDED_CASE----------------------")
 
     C = np.array([2, 1])
     A = np.array([
@@ -479,7 +479,7 @@ def TEST_UNBOUNDED_CASE_A09():
 
 
 def TEST_UNSOLVABLE_CASE_A05():
-    print("----------------------------RUNNING_TEST_UNSOLVABLE_CASE----------------------------")
+    print("----------------------RUNNING_TEST_UNSOLVABLE_CASE----------------------")
 
     C = np.array([5, 4, 0, -5, 13])
     A = np.array([
@@ -514,7 +514,7 @@ def TEST_UNSOLVABLE_CASE_A05():
 
 
 def TEST_UNSOLVABLE_CASE_A09():
-    print("----------------------------RUNNING_TEST_UNSOLVABLE_CASE----------------------------")
+    print("----------------------RUNNING_TEST_UNSOLVABLE_CASE----------------------")
 
     C = np.array([5, 4, 0, -5, 13])
     A = np.array([
@@ -548,18 +548,18 @@ def TEST_UNSOLVABLE_CASE_A09():
         return 0
 
 
-simplex_general_case_decVar_str = ("----------------------------SIMPLEX_TEST_GENERAL_CASE----------------------------\n"
+simplex_general_case_decVar_str = ("----------------------SIMPLEX_TEST_GENERAL_CASE----------------------\n"
                                    "Decision variables: [3, 1.5]")
-simplex_minimize_case_decVar_str = ("----------------------------SIMPLEX_TEST_MINIMIZE_CASE"
-                                    "----------------------------\n"
+simplex_minimize_case_decVar_str = ("----------------------SIMPLEX_TEST_MINIMIZE_CASE"
+                                    "----------------------\n"
                                     "Decision variables: [0, 0.75, 5.375]")
-simplex_slack_case_decVar_str = ("----------------------------SIMPLEX_TEST_SLACK_CASE----------------------------\n"
+simplex_slack_case_decVar_str = ("----------------------SIMPLEX_TEST_SLACK_CASE----------------------\n"
                                  "Decision variables: [11.5, 0.75, 0, 0]")
-simplex_unbounded_case_decVar_str = ("----------------------------SIMPLEX_TEST_UNBOUNDED_CASE"
-                                     "----------------------------\n"
+simplex_unbounded_case_decVar_str = ("----------------------SIMPLEX_TEST_UNBOUNDED_CASE"
+                                     "----------------------\n"
                                      "Decision variables: None")
-simplex_unsolvable_case_decVar_str = ("----------------------------SIMPLEX_TEST_UNSOLVABLE_CASE"
-                                      "----------------------------\n"
+simplex_unsolvable_case_decVar_str = ("----------------------SIMPLEX_TEST_UNSOLVABLE_CASE"
+                                      "----------------------\n"
                                       "Decision variables: None")
 
 
@@ -579,6 +579,6 @@ for test in tests:
             tests_passed += test[test_variant_i]()
 
 
-print("----------------------------RESULTS----------------------------")
+print("----------------------RESULTS----------------------")
 print(f"Total number of tests: {len(tests) * 2}")
 print(f"Total number of passed tests: {tests_passed}")
