@@ -6,21 +6,22 @@ from enum import Enum
 class State(Enum):
     SOLVED = 0
     UNSOLVED = 1
-    UNAPPLICABLE = 2
+    INAPPLICABLE = 2
 
 
 class Result:
     state: State
     objective_function_value: Optional[np.float64]
     solution: Optional[np.array]
-
+    maximize: bool
     def __init__(self,
                  state: State,
                  objective_function_value: Optional[np.array] = None,
-                 solution: np.float64 = None):
+                 solution: np.float64 = None, maximize:bool = True):
         self.state = state
         self.objective_function_value = objective_function_value
         self.solution = solution
+        self.maximize = maximize
 #def print_initial_inputs(Vector &C, Matrix &A, Vector &b, double eps, bool maximize)
 def print_initial_inputs(
         C: np.array,  # Vector of objective function coefficients
@@ -125,6 +126,37 @@ def print_initial_inputs(
         print(c_str)
 
 
+def print_result(result:Result):
+
+    if (result.state == State.INAPPLICABLE):
+        print("The method is not applicable!")
+    elif (result.state == State.UNSOLVED ):
+        print("Unsolved problem!")
+    else:
+        print("SOLVED!")
+        decVar_str = ""
+        decVar_str +="Decision variables: ["
+        for i in range(len(result.solution)):
+        #for (int i = 0; i < result.solution.size(); i++)
+            decVar_str += str(result.solution[i])
+            if (i != len(result.solution) - 1):
+            
+                decVar_str += ", "
+            
+        decVar_str += "]"
+        print(decVar_str)
+        res_str = ""
+        if (result.maximize):
+        
+            res_str += "Maximum "
+        
+        else:
+        
+            res_str += "Minimum "
+        
+        res_str += f"objective function value: {result.objective_function_value}"
+        print(res_str)
+    return 0
 
 
 def interior_point(
@@ -137,7 +169,7 @@ def interior_point(
         maximizing: bool = True) -> Result:  # Flag for maximization or minimization
     # Check if the method is applicable: the initial point must satisfy the constraints
     if (not np.all(np.dot(A, x_0) >= b) or np.any(x_0 == 0)):
-        return Result(State.UNAPPLICABLE)
+        return Result(State.INAPPLICABLE, maximize=maximizing)
     # If the problem is a minimization, invert the coefficients of the objective function
     if (not maximizing):
         C = -C
@@ -184,13 +216,13 @@ def interior_point(
         # Check the stopping criterion based on accuracy
         if Mu < eps:
             result = np.dot(C, x)
-            return Result(State.SOLVED, objective_function_value=result, solution=x)
+            return Result(State.SOLVED, objective_function_value=result, solution=x, maximize=maximizing)
 
         iteration += 1
 
         # Check the iteration limit
         if iteration >= 1000:
-            return Result(State.UNSOLVED)
+            return Result(State.UNSOLVED, maximize=maximizing)
 
         # Update the value of x* considering the step size and gradient
         x_star += (alpha / Mu) * C_p
@@ -213,7 +245,18 @@ def TEST_CASE_GENERAL():
     result = interior_point(C, A, x_0, b );
     
     
-    #if result.state == State.SOLVED:
+    if result.state == State.SOLVED:
+        print_result(result)
+    else:
+        state_name = ""
+        if result.state == State.UNSOLVED:
+            state_name = "UNSOLVED"
+        elif result.state == State.INAPPLICABLE:
+            state_name = "INAPLICABLE"
+        elif result.state == State.SOLVED:
+            state_name = "SOLVED"
+        print(f"incorrect state type. expected SOLVED, got {state_name}.")
+        
         
     
     '''if (!(result.state == bounded))
