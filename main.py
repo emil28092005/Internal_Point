@@ -235,6 +235,7 @@ def TEST_CASE_GENERAL():
     expected_state = State.SOLVED
     if result.state == expected_state:
         print_result(result)
+        return 1
     else:
         state_name = ""
         if result.state == State.UNSOLVED:
@@ -265,6 +266,7 @@ def TEST_MINIMIZE_CASE():
     expected_state = State.SOLVED
     if result.state == expected_state:
         print_result(result)
+        return 1
     else:
         state_name = ""
         if result.state == State.UNSOLVED:
@@ -274,6 +276,7 @@ def TEST_MINIMIZE_CASE():
         elif result.state == State.SOLVED:
             state_name = "SOLVED"
         print(f"incorrect state type. expected SOLVED, got {state_name}.")
+        return 0
 
 
 def TEST_WITH_SLACK_CASE():
@@ -296,6 +299,7 @@ def TEST_WITH_SLACK_CASE():
     expected_state = State.SOLVED
     if result.state == expected_state:
         print_result(result)
+        return 1
     else:
         state_name = ""
         if result.state == State.UNSOLVED:
@@ -326,6 +330,7 @@ def TEST_UNBOUNDED_CASE():
     expected_state = State.SOLVED
     if result.state == expected_state:
         print_result(result)
+        return 1
     else:
         state_name = ""
         if result.state == State.UNSOLVED:
@@ -335,6 +340,7 @@ def TEST_UNBOUNDED_CASE():
         elif result.state == State.SOLVED:
             state_name = "SOLVED"
         print(f"incorrect state type. expected SOLVED, got {state_name}.")
+        return 0
 
 
 def TEST_UNSOLVABLE_CASE():
@@ -358,6 +364,7 @@ def TEST_UNSOLVABLE_CASE():
     expected_state = State.SOLVED
     if result.state == expected_state:
         print_result(result)
+        return 1
     else:
         state_name = ""
         if result.state == State.UNSOLVED:
@@ -367,3 +374,22 @@ def TEST_UNSOLVABLE_CASE():
         elif result.state == State.SOLVED:
             state_name = "SOLVED"
         print(f"incorrect state type. expected SOLVED, got {state_name}.")
+
+        return 0
+
+
+tests = [
+    TEST_CASE_GENERAL(),
+    TEST_MINIMIZE_CASE(),
+    TEST_WITH_SLACK_CASE(),
+    TEST_UNBOUNDED_CASE(),
+    TEST_UNSOLVABLE_CASE()
+]
+tests_passed = 0
+for test in tests:
+    tests_passed += test
+
+
+print("----------------------------RESULTS----------------------------")
+print("Total number of tests: " << tests.size())
+print("Total number of passed tests: " << tests_passed)
